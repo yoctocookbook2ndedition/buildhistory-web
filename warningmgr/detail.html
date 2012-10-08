@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<body>
+{% autoescape on %}
+
+<h1>Warning item</h1>
+
+<table class="table table-striped table-bordered table-condensed">
+<tr>
+    <th>Summary</th>
+    <td colspan="3">{{ warningitem.summary }}</td>
+</tr>
+<tr>
+    <th>Status</th>
+    <td width="25%">
+    {% if warningitem.status == "N" %}
+    <span class="label label-warning">
+    {% endif %}
+    {% if warningitem.status == "A" %}
+    <span class="label label-important">
+    {% endif %}
+    {% if warningitem.status == "I" %}
+    <span class="label">
+    {% endif %}
+    {% if warningitem.status == "R" %}
+    <span class="label label-info">
+    {% endif %}
+    {{ warningitem.get_status_display }}
+    </span>
+    </td>
+    <th width="12%">Reviewed by</th>
+    <td>
+    {% if warningitem.status_user %}
+    {{ warningitem.status_user }} on {{ warningitem.status_date }} ({{ warningitem.status_date|timesince }} ago)
+    {% else %}
+    Not yet reviewed
+    {% endif %}
+    </td>
+</td>
+</tr>
+<tr>
+    <th>Description</th>
+    <td colspan="3"><pre class="description">{{ warningitem.description }}</pre></td>
+</tr>
+</table>
+
+<div class="well">
+{% if user.is_authenticated %}
+    {% if warningitem.status != "N" %}
+    <a href="{% url unreview warningitem.id %}" class="btn">Un-review</a>
+    {% endif %}
+    {% if warningitem.status == "N" %}
+    <a href="{% url actionreq warningitem.id %}" class="btn">Action Required</a>
+    <a href="{% url resolve warningitem.id %}" class="btn">Resolve</a>
+    <a href="{% url ignore warningitem.id %}" class="btn">Ignore</a>
+    {% endif %}
+    {% if warningitem.status == "A" %}
+    <a href="{% url resolve warningitem.id %}" class="btn">Resolve</a>
+    <a href="{% url ignore warningitem.id %}" class="btn">Ignore</a>
+    {% endif %}
+{% endif %}
+</div>
+
+<h2>Comments</h2>
+
+{% for comment in warningitem.comment_set.all %}
+<div class="comment">
+<div class="comment_meta">{{ comment.author_full_name }} - {{ comment.date }} ({{ comment.date|timesince }} ago)</div>
+<pre class="comment_text">
+{{ comment.comment }}
+</pre>
+</div>
+{% endfor %}
+
+<h3>Post a comment</h3>
+{% if user.is_authenticated and perms.warningmgr.change_warningitem %}
+{% if error_message %}<div class="alert alert-error">{{ error_message }}</div>{% endif %}
+<form action="{% url postcomment warningitem.id %}" method="post" class="well">
+{% csrf_token %}
+<textarea rows="10" name="comment_text"></textarea>
+<br>
+<input type="submit" value="Post" class="btn" />
+</form>
+{% else %}
+<p>You must be logged in to post a comment</p>
+{% endif %}
+
+{% endautoescape %}
+</body>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<body>
+{% autoescape on %}
+
+<h1>Warnings</h1>
+
+{% if user.is_authenticated %}
+    <form action="{% url multi_action %}" method="post">
+    {% csrf_token %}
+{% endif %}
+{% if warning_list %}
+    <table class="table table-striped table-bordered table-condensed">
+    <tr>
+{% if user.is_authenticated %}
+        <th></th>
+{% endif %}
+        <th>Summary</th>
+        <th>Status</th>
+    </tr>
+    {% for warningitem in warning_list %}
+    <tr>
+{% if user.is_authenticated %}
+        <td><input type="checkbox" name="selecteditems" value="{{ warningitem.id }}"></td>
+{% endif %}
+        <td><a href="{% url warning_item warningitem.id %}">{{ warningitem.summary }}</td>
+        <td>
+    {% if warningitem.status == "N" %}
+    <span class="label label-warning">
+    {% endif %}
+    {% if warningitem.status == "A" %}
+    <span class="label label-important">
+    {% endif %}
+    {% if warningitem.status == "I" %}
+    <span class="label">
+    {% endif %}
+    {% if warningitem.status == "R" %}
+    <span class="label label-info">
+    {% endif %}
+    {{ warningitem.get_status_display }}
+    </span>
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+    {% if is_paginated %}
+        <div class="pagination pagination-centered">
+            <ul>
+            {% if page_obj.has_previous %}
+                <li><a href="?page={{ page_obj.previous_page_number }}">prev</a></li>
+            {% else %}
+                <li class="disabled"><a href="#">prev</a></li>
+            {% endif %}
+            {% for i in paginator.page_range %}
+                {% if i == page_obj.number %}
+                <li class="active"><a href="#">{{ page_obj.number }}</a></li>
+                {% else %}
+                <li><a href="?page={{i}}">{{i}}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li><a href="?page={{ page_obj.next_page_number }}">next</a></li>
+            {% else %}
+                <li class="disabled"><a href="#">next</a></li>
+            {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+{% if user.is_authenticated and perms.warningmgr.change_warningitem %}
+<div class="form-inline">
+Action: <select name="action">
+    <option value="" selected="selected">---------</option>
+    <option value="actionreq">Action Required</option>
+    <option value="resolve">Resolve</option>
+    <option value="ignore">Ignore</option>
+</select>
+<button type="submit" class="btn" title="Run the selected action" name="index" value="0">Go</button>
+</div>
+</form>
+{% endif %}
+{% else %}
+    <p>No warnings have been recorded.</p>
+{% endif %}
+
+{% endautoescape %}
+</body>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/css/bootstrap.css" />
+    <link rel="stylesheet" href="/static/css/additional.css" />
+    <title>{% block title %}Buildhistory{% endblock %}</title>
+</head>
+
+<body>
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="#">
+                Buildhistory
+                </a>
+        {% block header %}
+                <ul class="nav">
+                    <li><a href="{% url warning_list %}">{% trans "queue" %}</a></li>
+                    <li><a href="{% url warning_list_reviewed %}">{% trans "reviewed" %}</a></li>
+                </ul>
+                <ul class="nav pull-right">
+                    {% if user.is_authenticated %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        {{ user.username }}
+                        <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url auth_logout %}">{% trans "Log out" %}</a></li>
+                            <li><a href="{% url auth_password_change %}">{% trans "Change password" %}</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li>
+                    <a href="{% url auth_login %}">{% trans "log in" %}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+        {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer">
+        {% block footer %}
+        <hr />
+        {% endblock %}
+    </div>
+
+    <script src="/static/js/jquery-1.7.2.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+
+</html>
