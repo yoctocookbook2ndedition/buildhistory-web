@@ -45,9 +45,9 @@ Setup instructions:
 
    python manage.py runserver
 
-   Then visit http://127.0.0.1:8000/ with your browser. This should only
-   be used for testing - for production you need to use a proper web
-   server.
+   Then visit http://127.0.0.1:8000/warningmgr/ with your browser. This
+   should only be used for testing - for production you need to use a
+   proper web server.
 
 
 Usage
