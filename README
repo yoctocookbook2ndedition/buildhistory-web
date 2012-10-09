@@ -16,7 +16,9 @@ Setup
 In order to make use of this application you will need:
 
 * A web server set up to host Django applications
-* A database supported by Django (SQLite, MySQL, etc.)
+* A database supported by Django (SQLite, MySQL, etc.). Django takes
+  care of creating the database itself, you just need to ensure that the
+  database server (if not using SQLite) is configured and running.
 * On the machine that will run the import script (which does not have to
   be the same machine as the web server - could be the build machine;
   however it does still have to have Django installed and have access
@@ -29,8 +31,23 @@ In order to make use of this application you will need:
   * GitPython (python-git) version 0.3.1 or later
 * django-registration
 
-You'll need to edit settings.py to specify a database, EMAIL_HOST and
-other settings specific to your installation.
+Setup instructions:
+
+1. Edit settings.py to specify a database, EMAIL_HOST and other settings
+   specific to your installation.
+
+2. Run the following command within the buildhistory-web directory to
+   initialise the database:
+
+   python manage.py syncdb
+
+3. You can test the web application locally by running the following:
+
+   python manage.py runserver
+
+   Then visit http://127.0.0.1:8000/ with your browser. This should only
+   be used for testing - for production you need to use a proper web
+   server.
 
 
 Usage
