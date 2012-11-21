@@ -36,11 +36,16 @@ def main():
     setup_environ(settings)
 
     # Set path to OE lib dir so we can import the buildhistory_analysis module
-    basepath = os.path.abspath(os.path.dirname(os.path.abspath(sys.argv[0])) + '/..')
+    basepath = os.path.abspath(sys.argv[1])
     newpath = basepath + '/meta/lib'
     # Set path to bitbake lib dir so the buildhistory_analysis module can load bb.utils
-    if os.path.exists(basepath + '/bitbake/lib/bb'):
+    bitbakedir_env = os.environ.get('BITBAKEDIR', '')
+    if bitbakedir_env and os.path.exists(bitbakedir_env + '/lib/bb'):
+        bitbakepath = bitbakedir_env
+    elif os.path.exists(basepath + '/bitbake/lib/bb'):
         bitbakepath = basepath + '/bitbake'
+    elif os.path.exists(basepath + '/../bitbake/lib/bb'):
+        bitbakepath = os.path.abspath(basepath + '/../bitbake')
     else:
         # look for bitbake/bin dir in PATH
         bitbakepath = None
@@ -49,7 +54,7 @@ def main():
                 bitbakepath = os.path.abspath(os.path.join(pth, '..'))
                 break
         if not bitbakepath:
-            print("Unable to find bitbake by searching parent directory of this script or PATH")
+            print("Unable to find bitbake by searching BITBAKEDIR, specified path '%s' or its parent, or PATH" % basepath)
             sys.exit(1)
 
     sys.path.extend([newpath, bitbakepath + '/lib'])
