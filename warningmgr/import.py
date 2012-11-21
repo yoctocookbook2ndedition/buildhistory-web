@@ -25,13 +25,13 @@ def main():
         sys.exit(1)
 
     # Get access to our Django model
-    newpath = os.path.abspath(os.path.dirname(os.path.abspath(sys.argv[0])) + '/../..')
+    newpath = os.path.abspath(os.path.dirname(os.path.abspath(sys.argv[0])) + '/..')
     sys.path.append(newpath)
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'warningmanager.settings'
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
     from django.core.management import setup_environ
-    from warningmanager.warningmgr.models import WarningItem
-    from warningmanager import settings
+    from warningmgr.models import WarningItem
+    import settings
 
     setup_environ(settings)
 
