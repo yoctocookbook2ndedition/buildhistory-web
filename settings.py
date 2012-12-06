@@ -153,5 +153,5 @@ LOGGING = {
 
 ACCOUNT_ACTIVATION_DAYS = 2
 EMAIL_HOST = 'smtp.example.com'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/warningmgr'
 
