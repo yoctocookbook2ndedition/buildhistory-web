@@ -4,6 +4,9 @@
 #
 # Copyright (C) 2012 Intel Corporation
 # Author: Paul Eggleton <paul.eggleton@linux.intel.com>
+#
+# Licensed under the MIT license, see COPYING.MIT for details
+
 
 import sys
 import os.path

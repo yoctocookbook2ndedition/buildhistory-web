@@ -1,3 +1,9 @@
+# buildhistory-web - view definitions
+#
+# Copyright (C) 2013 Intel Corporation
+#
+# Licensed under the MIT license, see COPYING.MIT for details
+
 from django.shortcuts import get_object_or_404, render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse

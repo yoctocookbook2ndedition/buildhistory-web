@@ -1,3 +1,9 @@
+# buildhistory-web - model definitions
+#
+# Copyright (C) 2013 Intel Corporation
+#
+# Licensed under the MIT license, see COPYING.MIT for details
+
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
