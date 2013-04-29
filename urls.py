@@ -1,3 +1,10 @@
+# buildhistory-web - top-level URL definitions
+#
+# Based on the Django project template
+#
+# Copyright (c) Django Software Foundation and individual contributors.
+# All rights reserved.
+
 from django.conf.urls.defaults import patterns, include, url
 
 from django.contrib import admin

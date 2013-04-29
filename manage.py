@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+
+# buildhistory-web - Django management script
+#
+# Based on the Django project template
+#
+# Copyright (c) Django Software Foundation and individual contributors.
+# All rights reserved.
+
 from django.core.management import execute_manager
 import imp
 try:

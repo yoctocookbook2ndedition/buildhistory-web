@@ -1,4 +1,7 @@
-# Django settings for warningmanager project.
+# Django settings for the buildhistory warning manager project.
+#
+# Based on settings.py from the Django project template
+# Copyright (c) Django Software Foundation and individual contributors.
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
