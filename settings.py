@@ -111,6 +111,11 @@ MIDDLEWARE_CLASSES = (
 # Clickjacking protection
 X_FRAME_OPTIONS = 'DENY'
 
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+TEMPLATE_CONTEXT_PROCESSORS = TCP + (
+    'django.core.context_processors.request',
+)
+
 ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
