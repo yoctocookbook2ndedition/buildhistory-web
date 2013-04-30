@@ -50,7 +50,7 @@ def _statuschange(request, pk, newstatus):
 
 
 def multi_action(request):
-    if not request.user.is_authenticated():
+    if not (request.user.is_authenticated() and request.user.has_perm('warningmgr.change_warningitem')):
         raise PermissionDenied
     action = request.POST['action']
     action_statuses = { 'actionreq': 'A', 'resolve': 'R', 'ignore': 'I' }
