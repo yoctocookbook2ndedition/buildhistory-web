@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="{% static "css/bootstrap.css" %}" />
     <link rel="stylesheet" href="{% static "css/bootstrap-responsive.css" %}" />
     <link rel="stylesheet" href="{% static "css/additional.css" %}" />
-    <title>{% block title %}Buildhistory{% endblock %}</title>
+    <title>Buildhistory{% block title_append %}{% endblock %}</title>
 </head>
 
 <body>
@@ -68,5 +68,8 @@
 
     <script src="{% static "js/jquery-1.7.2.js" %}"></script>
     <script src="{% static "js/bootstrap.js" %}"></script>
+{% block scripts %}
+{% endblock %}
 
+</body>
 </html>
