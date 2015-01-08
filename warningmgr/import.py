@@ -2,7 +2,7 @@
 
 # Report significant differences in the buildhistory repository since a specific revision
 #
-# Copyright (C) 2012 Intel Corporation
+# Copyright (C) 2012-2015 Intel Corporation
 # Author: Paul Eggleton <paul.eggleton@linux.intel.com>
 #
 # Licensed under the MIT license, see COPYING.MIT for details
@@ -11,6 +11,7 @@
 import sys
 import os.path
 from datetime import datetime
+import argparse
 
 # Ensure PythonGit is installed (buildhistory_analysis needs it)
 try:
@@ -21,11 +22,12 @@ except ImportError:
 
 
 def main():
-    if (len(sys.argv) < 4):
-        print("Import significant differences in the buildhistory repository into the buildhistory web interface")
-        print("Syntax: %s <corebasepath> <buildhistory-path> <since-revision> [to-revision]" % os.path.basename(sys.argv[0]))
-        print("If to-revision is not specified, it defaults to HEAD")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="buildhistory-web import tool")
+    parser.add_argument('corebasepath', help='Path to OE-Core base directory')
+    parser.add_argument('buildhistorypath', help='Path to buildhistory directory')
+    parser.add_argument('sincerevision', help='Starting revision in buildhistory repo')
+    parser.add_argument('torevision', nargs='?', default='HEAD', help='Ending revision in buildhistory repo (defaults to HEAD)')
+    args = parser.parse_args()
 
     # Get access to our Django model
     newpath = os.path.abspath(os.path.dirname(os.path.abspath(sys.argv[0])) + '/..')
@@ -39,7 +41,7 @@ def main():
     setup_environ(settings)
 
     # Set path to OE lib dir so we can import the buildhistory_analysis module
-    basepath = os.path.abspath(sys.argv[1])
+    basepath = os.path.abspath(args.corebasepath)
     newpath = basepath + '/meta/lib'
     # Set path to bitbake lib dir so the buildhistory_analysis module can load bb.utils
     bitbakedir_env = os.environ.get('BITBAKEDIR', '')
@@ -63,18 +65,13 @@ def main():
     sys.path.extend([newpath, bitbakepath + '/lib'])
     import oe.buildhistory_analysis
 
-    repo = git.Repo(sys.argv[2])
+    repo = git.Repo(args.buildhistorypath)
     assert repo.bare == False
 
     # Import items
-    if len(sys.argv) > 4:
-        torev = sys.argv[4]
-    else:
-        torev = 'HEAD'
-
-    for commit in repo.iter_commits("%s..%s" % (sys.argv[3], torev)):
+    for commit in repo.iter_commits("%s..%s" % (args.sincerevision, args.torevision)):
         print("Processing revision %s..." % commit.hexsha)
-        changes = oe.buildhistory_analysis.process_changes(sys.argv[2], "%s^" % commit, commit)
+        changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, "%s^" % commit, commit)
         for chg in changes:
             wi = WarningItem()
             wi.created_date = datetime.now()
