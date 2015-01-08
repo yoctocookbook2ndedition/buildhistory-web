@@ -27,6 +27,8 @@ def main():
     parser.add_argument('buildhistorypath', help='Path to buildhistory directory')
     parser.add_argument('sincerevision', help='Starting revision in buildhistory repo')
     parser.add_argument('torevision', nargs='?', default='HEAD', help='Ending revision in buildhistory repo (defaults to HEAD)')
+    parser.add_argument('-m', '--build-name', help='Associated name for the build')
+    parser.add_argument('-u', '--build-url', help='Associated URL for the build')
     args = parser.parse_args()
 
     # Get access to our Django model
@@ -35,7 +37,7 @@ def main():
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
     from django.core.management import setup_environ
-    from warningmgr.models import WarningItem
+    from warningmgr.models import WarningItem, Build
     import settings
 
     setup_environ(settings)
@@ -69,12 +71,19 @@ def main():
     assert repo.bare == False
 
     # Import items
+    b = Build()
+    b.created_date = datetime.now()
+    if args.build_name:
+        b.name = args.build_name
+    if args.build_url:
+        b.build_url = args.build_url
+    b.save()
     for commit in repo.iter_commits("%s..%s" % (args.sincerevision, args.torevision)):
         print("Processing revision %s..." % commit.hexsha)
         changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, "%s^" % commit, commit)
         for chg in changes:
             wi = WarningItem()
-            wi.created_date = datetime.now()
+            wi.build = b
             wi.package = 'unknown'
             desc = str(chg)
             wi.description = desc

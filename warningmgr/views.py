@@ -1,6 +1,6 @@
 # buildhistory-web - view definitions
 #
-# Copyright (C) 2013 Intel Corporation
+# Copyright (C) 2013-2015 Intel Corporation
 #
 # Licensed under the MIT license, see COPYING.MIT for details
 
@@ -70,4 +70,4 @@ class WarningListView(ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return WarningItem.objects.filter(status__in=self.request.session.get('status_filter', 'NA')).order_by('created_date')
+        return WarningItem.objects.filter(status__in=self.request.session.get('status_filter', 'NA')).order_by('-build__created_date')

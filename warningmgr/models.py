@@ -1,12 +1,20 @@
 # buildhistory-web - model definitions
 #
-# Copyright (C) 2013 Intel Corporation
+# Copyright (C) 2013-2015 Intel Corporation
 #
 # Licensed under the MIT license, see COPYING.MIT for details
 
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
+
+class Build(models.Model):
+    name = models.CharField(max_length=200, blank=True)
+    created_date = models.DateTimeField('Created')
+    build_url = models.URLField(blank=True)
+
+    def __unicode__(self):
+        return self.name or str(self.created_date)
 
 class WarningItem(models.Model):
     STATUS_CHOICES = (
@@ -15,7 +23,7 @@ class WarningItem(models.Model):
         ('A', 'Action Required'),
         ('R', 'Resolved'),
     )
-    created_date = models.DateTimeField('Created')
+    build = models.ForeignKey(Build)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='N')
     status_date = models.DateTimeField('Status Changed', default=datetime.now, editable=False)
     status_user = models.CharField('Status Changed By', max_length=50, blank=True)

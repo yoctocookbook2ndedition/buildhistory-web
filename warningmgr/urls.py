@@ -1,6 +1,6 @@
 # buildhistory-web - URL definitions
 #
-# Copyright (C) 2013 Intel Corporation
+# Copyright (C) 2013-2015 Intel Corporation
 #
 # Licensed under the MIT license, see COPYING.MIT for details
 
@@ -16,7 +16,7 @@ urlpatterns = patterns('',
             name='warning_list'),
     url(r'^reviewed/$',
         ListView.as_view(
-            queryset=WarningItem.objects.order_by('created_date').filter(status__in='AIR'),
+            queryset=WarningItem.objects.order_by('-build__created_date').filter(status__in='AIR'),
             context_object_name='warning_list',
             template_name='warningmgr/index.html'),
             name='warning_list_reviewed'),

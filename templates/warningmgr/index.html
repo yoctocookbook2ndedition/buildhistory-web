@@ -5,7 +5,7 @@
 
   buildhistory-web - warning list page template
 
-  Copyright (C) 2013 Intel Corporation
+  Copyright (C) 2013-2015 Intel Corporation
   Licensed under the MIT license, see COPYING.MIT for details
 
 {% endcomment %}
@@ -30,6 +30,15 @@
         <th>Status</th>
     </tr>
     {% for warningitem in warning_list %}
+    {% ifchanged warningitem.build %}
+    <tr>
+        <td colspan="3">
+            {% if warningitem.build.build_url %}<a href="{{ warningitem.build.build_url }}">{% endif %}
+            Build {{ warningitem.build }}
+            {% if warningitem.build.build_url %}</a>{% endif %}
+        </td>
+    </tr>
+    {% endifchanged %}
     <tr>
 {% if user.is_authenticated %}
         <td><input type="checkbox" name="selecteditems" value="{{ warningitem.id }}"></td>
