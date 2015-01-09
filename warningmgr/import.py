@@ -29,6 +29,7 @@ def main():
     parser.add_argument('torevision', nargs='?', default='HEAD', help='Ending revision in buildhistory repo (defaults to HEAD)')
     parser.add_argument('-m', '--build-name', help='Associated name for the build')
     parser.add_argument('-u', '--build-url', help='Associated URL for the build')
+    parser.add_argument('-b', '--branch', help='Branch in the buildhistory repository to use (defaults to currently checked out branch)')
     args = parser.parse_args()
 
     # Get access to our Django model
@@ -70,14 +71,19 @@ def main():
     repo = git.Repo(args.buildhistorypath)
     assert repo.bare == False
 
-    # Import items
+    if args.branch:
+        repo.git.checkout(args.branch)
+
+    # Create a build
     b = Build()
     b.created_date = datetime.now()
+    b.vcs_branch = repo.head.reference
     if args.build_name:
         b.name = args.build_name
     if args.build_url:
         b.build_url = args.build_url
     b.save()
+    # Import items
     for commit in repo.iter_commits("%s..%s" % (args.sincerevision, args.torevision)):
         print("Processing revision %s..." % commit.hexsha)
         changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, "%s^" % commit, commit)

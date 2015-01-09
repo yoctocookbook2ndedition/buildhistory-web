@@ -12,6 +12,7 @@ class Build(models.Model):
     name = models.CharField(max_length=200, blank=True)
     created_date = models.DateTimeField('Created')
     build_url = models.URLField(blank=True)
+    vcs_branch = models.CharField(max_length=200)
 
     def __unicode__(self):
         return self.name or str(self.created_date)
