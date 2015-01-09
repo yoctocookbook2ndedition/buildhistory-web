@@ -30,6 +30,7 @@ def main():
     parser.add_argument('-m', '--build-name', help='Associated name for the build')
     parser.add_argument('-u', '--build-url', help='Associated URL for the build')
     parser.add_argument('-b', '--branch', help='Branch in the buildhistory repository to use (defaults to currently checked out branch)')
+    parser.add_argument('-n', '--dry-run', help="Don't write any data back to the database", action="store_true")
     args = parser.parse_args()
 
     # Get access to our Django model
@@ -38,6 +39,7 @@ def main():
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
     from django.core.management import setup_environ
+    from django.db import transaction
     from warningmgr.models import WarningItem, Build
     import settings
 
@@ -85,30 +87,47 @@ def main():
         for commit in repo.iter_commits(args.torevision):
             sincerevision = commit.hexsha
 
-    # Create a build
-    b = Build()
-    b.created_date = datetime.now()
-    b.vcs_branch = repo.head.reference
-    b.vcs_rev = repo.commit(args.torevision).hexsha
-    if args.build_name:
-        b.name = args.build_name
-    if args.build_url:
-        b.build_url = args.build_url
-    b.save()
-    # Import items
-    for commit in repo.iter_commits("%s..%s" % (sincerevision, args.torevision), reverse=True):
-        print("Processing revision %s..." % commit.hexsha)
-        changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, "%s^" % commit, commit)
-        for chg in changes:
-            wi = WarningItem()
-            wi.build = b
-            wi.package = 'unknown'
-            desc = str(chg)
-            wi.description = desc
-            wi.summary = desc.split('\n', 1)[0]
-            print("Creating: %s" % wi.summary)
-            wi.vcs_rev = commit.hexsha
-            wi.save()
+    transaction.enter_transaction_management()
+    transaction.managed(True)
+    try:
+        # Create a build
+        b = Build()
+        b.created_date = datetime.now()
+        b.vcs_branch = repo.head.reference
+        b.vcs_rev = repo.commit(args.torevision).hexsha
+        if args.build_name:
+            b.name = args.build_name
+        if args.build_url:
+            b.build_url = args.build_url
+        b.save()
+        # Import items
+        for commit in repo.iter_commits("%s..%s" % (sincerevision, args.torevision), reverse=True):
+            print("Processing revision %s..." % commit.hexsha)
+            changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, "%s^" % commit, commit)
+            for chg in changes:
+                wi = WarningItem()
+                wi.build = b
+                wi.package = 'unknown'
+                desc = str(chg)
+                wi.description = desc
+                wi.summary = desc.split('\n', 1)[0]
+                print("Creating: %s" % wi.summary)
+                wi.vcs_rev = commit.hexsha
+                wi.save()
+
+        if args.dry_run:
+            transaction.rollback()
+        else:
+            transaction.commit()
+    except KeyboardInterrupt:
+        transaction.rollback()
+        print("Update interrupted, changes rolled back")
+    except:
+        import traceback
+        traceback.print_exc()
+        transaction.rollback()
+    finally:
+        transaction.leave_transaction_management()
 
     sys.exit(0)
 
