@@ -7,7 +7,7 @@
 from django.conf.urls.defaults import *
 from django.views.generic import DetailView, ListView
 from warningmgr.models import WarningItem
-from warningmgr.views import WarningListView
+from warningmgr.views import WarningListView, ReviewedWarningListView
 
 urlpatterns = patterns('',
     url(r'^$',
@@ -15,9 +15,7 @@ urlpatterns = patterns('',
             template_name='warningmgr/index.html'),
             name='warning_list'),
     url(r'^reviewed/$',
-        ListView.as_view(
-            queryset=WarningItem.objects.order_by('-build__created_date').filter(status__in='AIR'),
-            context_object_name='warning_list',
+        ReviewedWarningListView.as_view(
             template_name='warningmgr/index.html'),
             name='warning_list_reviewed'),
     url(r'^multi_action/$', 'warningmgr.views.multi_action', name='multi_action'),

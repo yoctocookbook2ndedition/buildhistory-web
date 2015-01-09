@@ -30,8 +30,8 @@
                 </a>
         {% block header %}
                 <ul class="nav">
-                    <li><a href="{% url warning_list %}">{% trans "queue" %}</a></li>
-                    <li><a href="{% url warning_list_reviewed %}">{% trans "reviewed" %}</a></li>
+                    <li {% if not reviewed %}class="active"{% endif %}><a href="{% url warning_list %}">{% trans "queue" %}</a></li>
+                    <li {% if reviewed %}class="active"{% endif %}><a href="{% url warning_list_reviewed %}">{% trans "reviewed" %}</a></li>
                 </ul>
                 <ul class="nav pull-right">
                     {% if user.is_authenticated %}

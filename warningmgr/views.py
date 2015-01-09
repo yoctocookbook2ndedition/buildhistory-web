@@ -71,3 +71,13 @@ class WarningListView(ListView):
 
     def get_queryset(self):
         return WarningItem.objects.filter(status__in=self.request.session.get('status_filter', 'NA')).order_by('-build__created_date')
+
+class ReviewedWarningListView(WarningListView):
+
+    def get_context_data(self, **kwargs):
+        context = super(WarningListView, self).get_context_data(**kwargs)
+        context['reviewed'] = True
+        return context
+
+    def get_queryset(self):
+        return WarningItem.objects.filter(status__in=self.request.session.get('status_filter', 'AIR')).order_by('-build__created_date')

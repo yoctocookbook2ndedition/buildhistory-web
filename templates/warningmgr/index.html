@@ -14,8 +14,6 @@
 {% block content %}
 {% autoescape on %}
 
-<h1>Warnings</h1>
-
 {% if user.is_authenticated %}
     <form action="{% url multi_action %}" method="post">
     {% csrf_token %}
@@ -80,7 +78,11 @@ Action: <select name="action">
 </form>
 {% endif %}
 {% else %}
-    <p>No warnings have been recorded.</p>
+    {% if reviewed %}
+    <p>No warnings have been reviewed.</p>
+    {% else %}
+    <p>No warnings are in the queue.</p>
+    {% endif %}
 {% endif %}
 
 {% endautoescape %}
