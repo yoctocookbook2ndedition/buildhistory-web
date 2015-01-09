@@ -25,7 +25,7 @@ def main():
     parser = argparse.ArgumentParser(description="buildhistory-web import tool")
     parser.add_argument('corebasepath', help='Path to OE-Core base directory')
     parser.add_argument('buildhistorypath', help='Path to buildhistory directory')
-    parser.add_argument('sincerevision', help='Starting revision in buildhistory repo')
+    parser.add_argument('sincerevision', nargs='?', help='Starting revision in buildhistory repo (defaults to last revision)')
     parser.add_argument('torevision', nargs='?', default='HEAD', help='Ending revision in buildhistory repo (defaults to HEAD)')
     parser.add_argument('-m', '--build-name', help='Associated name for the build')
     parser.add_argument('-u', '--build-url', help='Associated URL for the build')
@@ -74,17 +74,29 @@ def main():
     if args.branch:
         repo.git.checkout(args.branch)
 
+    sincerevision = args.sincerevision or ''
+    if not sincerevision:
+        # Find most recent commit
+        res = list(Build.objects.filter(vcs_branch=repo.head.reference).order_by('-created_date')[:1])
+        if res:
+            sincerevision = res[0].vcs_rev
+    if not sincerevision:
+        # We need to find the first revision, this is crude but works
+        for commit in repo.iter_commits(args.torevision):
+            sincerevision = commit.hexsha
+
     # Create a build
     b = Build()
     b.created_date = datetime.now()
     b.vcs_branch = repo.head.reference
+    b.vcs_rev = repo.commit(args.torevision).hexsha
     if args.build_name:
         b.name = args.build_name
     if args.build_url:
         b.build_url = args.build_url
     b.save()
     # Import items
-    for commit in repo.iter_commits("%s..%s" % (args.sincerevision, args.torevision)):
+    for commit in repo.iter_commits("%s..%s" % (sincerevision, args.torevision), reverse=True):
         print("Processing revision %s..." % commit.hexsha)
         changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, "%s^" % commit, commit)
         for chg in changes:
