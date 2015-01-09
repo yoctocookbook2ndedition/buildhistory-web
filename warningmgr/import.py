@@ -31,6 +31,7 @@ def main():
     parser.add_argument('-u', '--build-url', help='Associated URL for the build')
     parser.add_argument('-b', '--branch', help='Branch in the buildhistory repository to use (defaults to currently checked out branch)')
     parser.add_argument('-n', '--dry-run', help="Don't write any data back to the database", action="store_true")
+    parser.add_argument('--iterate', help="Iterate over commits rather than just taking the difference between them", action="store_true")
     args = parser.parse_args()
 
     # Get access to our Django model
@@ -101,9 +102,9 @@ def main():
             b.build_url = args.build_url
         b.save()
         # Import items
-        for commit in repo.iter_commits("%s..%s" % (sincerevision, args.torevision), reverse=True):
-            print("Processing revision %s..." % commit.hexsha)
-            changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, "%s^" % commit, commit)
+        def process_changes(proc_start, proc_end):
+            print('Processing changes from %s to %s...' % (proc_start, proc_end))
+            changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, proc_start, proc_end)
             for chg in changes:
                 wi = WarningItem()
                 wi.build = b
@@ -114,6 +115,13 @@ def main():
                 print("Creating: %s" % wi.summary)
                 wi.vcs_rev = commit.hexsha
                 wi.save()
+
+        if args.iterate:
+            for commit in repo.iter_commits("%s..%s" % (sincerevision, args.torevision), reverse=True):
+                print("Processing revision %s..." % commit.hexsha)
+                process_changes("%s^" % commit, commit)
+        else:
+            process_changes(sincerevision, args.torevision)
 
         if args.dry_run:
             transaction.rollback()
