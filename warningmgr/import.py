@@ -39,12 +39,10 @@ def main():
     sys.path.append(newpath)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
-    from django.core.management import setup_environ
     from django.db import transaction
     from warningmgr.models import WarningItem, Build
-    import settings
 
-    setup_environ(settings)
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings") 
 
     # Set path to OE lib dir so we can import the buildhistory_analysis module
     basepath = os.path.abspath(args.corebasepath)
