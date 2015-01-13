@@ -4,7 +4,7 @@
 #
 # Licensed under the MIT license, see COPYING.MIT for details
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.views.generic import DetailView, ListView
 from warningmgr.models import WarningItem
 from warningmgr.views import WarningListView, ReviewedWarningListView
