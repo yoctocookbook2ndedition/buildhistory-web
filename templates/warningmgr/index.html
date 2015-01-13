@@ -15,7 +15,7 @@
 {% autoescape on %}
 
 {% if user.is_authenticated %}
-    <form action="{% url multi_action %}" method="post">
+    <form action="{% url "multi_action" %}" method="post">
     {% csrf_token %}
 {% endif %}
 {% if warning_list %}
@@ -41,7 +41,7 @@
 {% if user.is_authenticated %}
         <td><input type="checkbox" name="selecteditems" value="{{ warningitem.id }}"></td>
 {% endif %}
-        <td><a href="{% url warning_item warningitem.id %}">{{ warningitem.summary }}</td>
+        <td><a href="{% url "warning_item" warningitem.id %}">{{ warningitem.summary }}</td>
         <td>
     {% if warningitem.status == "N" %}
     <span class="label label-warning">

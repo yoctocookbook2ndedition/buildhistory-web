@@ -30,8 +30,8 @@
                 </a>
         {% block header %}
                 <ul class="nav">
-                    <li {% if not reviewed %}class="active"{% endif %}><a href="{% url warning_list %}">{% trans "queue" %}</a></li>
-                    <li {% if reviewed %}class="active"{% endif %}><a href="{% url warning_list_reviewed %}">{% trans "reviewed" %}</a></li>
+                    <li {% if not reviewed %}class="active"{% endif %}><a href="{% url "warning_list" %}">{% trans "queue" %}</a></li>
+                    <li {% if reviewed %}class="active"{% endif %}><a href="{% url "warning_list_reviewed" %}">{% trans "reviewed" %}</a></li>
                 </ul>
                 <ul class="nav pull-right">
                     {% if user.is_authenticated %}
@@ -41,13 +41,13 @@
                         <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url auth_logout %}">{% trans "Log out" %}</a></li>
-                            <li><a href="{% url auth_password_change %}">{% trans "Change password" %}</a></li>
+                            <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
+                            <li><a href="{% url "auth_password_change" %}">{% trans "Change password" %}</a></li>
                         </ul>
                     </li>
                     {% else %}
                     <li>
-                    <a href="{% url auth_login %}">{% trans "log in" %}</a>
+                    <a href="{% url "auth_login" %}">{% trans "log in" %}</a>
                     </li>
                     {% endif %}
                 </ul>
