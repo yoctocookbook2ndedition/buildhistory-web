@@ -2,7 +2,7 @@
 
   buildhistory-web - base template for output pages
 
-  Copyright (C) 2013 Intel Corporation
+  Copyright (C) 2016 Intel Corporation
   Licensed under the MIT license, see COPYING.MIT for details
 
 {% endcomment %}
@@ -15,46 +15,50 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static "css/bootstrap.css" %}" />
-    <link rel="stylesheet" href="{% static "css/bootstrap-responsive.css" %}" />
+    <link rel="stylesheet" href="{% static "css/bootstrap-theme.css" %}" />
     <link rel="stylesheet" href="{% static "css/additional.css" %}" />
     <title>Buildhistory{% block title_append %}{% endblock %}</title>
 </head>
 
 <body>
-    <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="brand" href="{% url 'warning_list' %}">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url 'warning_list' %}">
                 Buildhistory
                 </a>
+            </div>
+            <div class="container">
         {% block header %}
-                <ul class="nav">
+                <ul class="nav navbar-nav">
                     <li {% if not reviewed %}class="active"{% endif %}><a href="{% url "warning_list" %}">{% trans "queue" %}</a></li>
                     <li {% if reviewed %}class="active"{% endif %}><a href="{% url "warning_list_reviewed" %}">{% trans "reviewed" %}</a></li>
                 </ul>
-                <ul class="nav pull-right">
-                    {% if user.is_authenticated %}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                {% if user.is_authenticated %}
+                <div class="btn-group pull-right">
+                    <button class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown"">
+                        <i class="glyphicon glyphicon-user"></i>
                         {{ user.username }}
                         <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
-                            <li><a href="{% url "auth_password_change" %}">{% trans "Change password" %}</a></li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <li>
-                    <a href="{% url "auth_login" %}">{% trans "log in" %}</a>
-                    </li>
-                    {% endif %}
-                </ul>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url "auth_logout" %}">{% trans "Log out" %}</a></li>
+                        <li><a href="{% url "auth_password_change" %}">{% trans "Change password" %}</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="pull-right">
+                    <a class="btn btn-default navbar-btn" href="{% url 'auth_login' %}">{% trans "Log in" %}</a>
+                </div>
+                {% endif %}
         {% endblock %}
             </div>
         </div>
-    </div>
+    </nav>
 
     <div id="content" class="container top-padded">
         {% block content %}{% endblock %}
@@ -66,7 +70,7 @@
         {% endblock %}
     </div>
 
-    <script src="{% static "js/jquery-1.7.2.js" %}"></script>
+    <script src="{% static "js/jquery-1.12.3.js" %}"></script>
     <script src="{% static "js/bootstrap.js" %}"></script>
 {% block scripts %}
 {% endblock %}

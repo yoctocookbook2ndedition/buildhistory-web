@@ -5,7 +5,7 @@
 
   buildhistory-web - warning detail page template
 
-  Copyright (C) 2013 Intel Corporation
+  Copyright (C) 2016 Intel Corporation
   Licensed under the MIT license, see COPYING.MIT for details
 
 {% endcomment %}
@@ -59,16 +59,16 @@
 <div class="well">
 {% if user.is_authenticated %}
     {% if warningitem.status != "N" %}
-    <a href="{% url "unreview" warningitem.id %}" class="btn">Un-review</a>
+    <a href="{% url "unreview" warningitem.id %}" class="btn btn-default">Un-review</a>
     {% endif %}
     {% if warningitem.status == "N" %}
-    <a href="{% url "actionreq" warningitem.id %}" class="btn">Action Required</a>
-    <a href="{% url "resolve" warningitem.id %}" class="btn">Resolve</a>
-    <a href="{% url "ignore" warningitem.id %}" class="btn">Ignore</a>
+    <a href="{% url "actionreq" warningitem.id %}" class="btn btn-default">Action Required</a>
+    <a href="{% url "resolve" warningitem.id %}" class="btn btn-default">Resolve</a>
+    <a href="{% url "ignore" warningitem.id %}" class="btn btn-default">Ignore</a>
     {% endif %}
     {% if warningitem.status == "A" %}
-    <a href="{% url "resolve" warningitem.id %}" class="btn">Resolve</a>
-    <a href="{% url "ignore" warningitem.id %}" class="btn">Ignore</a>
+    <a href="{% url "resolve" warningitem.id %}" class="btn btn-default">Resolve</a>
+    <a href="{% url "ignore" warningitem.id %}" class="btn btn-default">Ignore</a>
     {% endif %}
 {% endif %}
 </div>
@@ -91,7 +91,7 @@
 {% csrf_token %}
 <textarea rows="10" name="comment_text"></textarea>
 <br>
-<input type="submit" value="Post" class="btn" />
+<input type="submit" value="Post" class="btn btn-default" />
 </form>
 {% else %}
 <p>You must be logged in to post a comment</p>
