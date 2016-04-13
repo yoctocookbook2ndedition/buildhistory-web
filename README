@@ -15,8 +15,7 @@ Setup
 
 In order to make use of this application you will need:
 
-* Django 1.6.x - tested with 1.6.10; newer versions may work, but the
-  application has not been tested with 1.7 or newer.
+* Django 1.8.x - tested with 1.8.12; newer versions may also work.
 * For production usage, a web server set up to host Django applications
   (not needed for local-only testing)
 * A database supported by Django (SQLite, MySQL, etc.). Django takes
@@ -31,7 +30,7 @@ In order to make use of this application you will need:
   database used by the web application):
   * Access to the buildhistory git repository produced by the build
     system, or a clone thereof
-  * Python 2.7
+  * Python 2.7.6 or newer (but not Python 3.x)
   * A copy of BitBake and OE-Core (or Poky, which includes both) -
     the "dora" release or newer is required.
   * GitPython (python-git) version 0.3.1 or later
@@ -44,7 +43,7 @@ Setup instructions:
 2. Run the following command within the buildhistory-web directory to
    initialise the database:
 
-   python manage.py syncdb
+   python manage.py migrate
 
    You should answer "yes" when asked to create an admin account.
 
