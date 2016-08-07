@@ -111,7 +111,7 @@ def main():
                 wi.description = desc
                 wi.summary = desc.split('\n', 1)[0]
                 print("Creating: %s" % wi.summary)
-                wi.vcs_rev = commit.hexsha
+                wi.vcs_rev = b.vcs_rev
                 wi.save()
 
         if args.iterate:
