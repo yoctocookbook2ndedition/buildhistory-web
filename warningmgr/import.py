@@ -2,7 +2,7 @@
 
 # Report significant differences in the buildhistory repository since a specific revision
 #
-# Copyright (C) 2012-2015 Intel Corporation
+# Copyright (C) 2012-2016 Intel Corporation
 # Author: Paul Eggleton <paul.eggleton@linux.intel.com>
 #
 # Licensed under the MIT license, see COPYING.MIT for details
@@ -19,6 +19,10 @@ try:
 except ImportError:
     print("Please install PythonGit 0.3.1 or later in order to use this script")
     sys.exit(1)
+
+
+class DryRunRollbackException(Exception):
+    pass
 
 
 def main():
@@ -86,54 +90,51 @@ def main():
         for commit in repo.iter_commits(args.torevision):
             sincerevision = commit.hexsha
 
-    transaction.enter_transaction_management()
-    transaction.managed(True)
     try:
-        # Create a build
-        b = Build()
-        b.created_date = datetime.now()
-        b.vcs_branch = repo.head.reference
-        b.vcs_rev = repo.commit(args.torevision).hexsha
-        if args.build_name:
-            b.name = args.build_name
-        if args.build_url:
-            b.build_url = args.build_url
-        b.save()
-        # Import items
-        def process_changes(proc_start, proc_end):
-            print('Processing changes from %s to %s...' % (proc_start, proc_end))
-            changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, proc_start, proc_end)
-            for chg in changes:
-                wi = WarningItem()
-                wi.build = b
-                wi.package = 'unknown'
-                desc = str(chg)
-                wi.description = desc
-                wi.summary = desc.split('\n', 1)[0]
-                print("Creating: %s" % wi.summary)
-                wi.vcs_rev = b.vcs_rev
-                wi.save()
+        with transaction.atomic():
+            # Create a build
+            b = Build()
+            b.created_date = datetime.now()
+            b.vcs_branch = repo.head.reference
+            b.vcs_rev = repo.commit(args.torevision).hexsha
+            if args.build_name:
+                b.name = args.build_name
+            if args.build_url:
+                b.build_url = args.build_url
+            b.save()
+            # Import items
+            def process_changes(proc_start, proc_end):
+                print('Processing changes from %s to %s...' % (proc_start, proc_end))
+                changes = oe.buildhistory_analysis.process_changes(args.buildhistorypath, proc_start, proc_end)
+                for chg in changes:
+                    wi = WarningItem()
+                    wi.build = b
+                    wi.package = 'unknown'
+                    desc = str(chg)
+                    wi.description = desc
+                    wi.summary = desc.split('\n', 1)[0]
+                    print("Creating: %s" % wi.summary)
+                    wi.vcs_rev = b.vcs_rev
+                    wi.save()
 
-        if args.iterate:
-            for commit in repo.iter_commits("%s..%s" % (sincerevision, args.torevision), reverse=True):
-                print("Processing revision %s..." % commit.hexsha)
-                process_changes("%s^" % commit, commit)
-        else:
-            process_changes(sincerevision, args.torevision)
+            if args.iterate:
+                for commit in repo.iter_commits("%s..%s" % (sincerevision, args.torevision), reverse=True):
+                    print("Processing revision %s..." % commit.hexsha)
+                    process_changes("%s^" % commit, commit)
+            else:
+                process_changes(sincerevision, args.torevision)
 
-        if args.dry_run:
-            transaction.rollback()
-        else:
-            transaction.commit()
+            if args.dry_run:
+                raise DryRunRollbackException()
+    except DryRunRollbackException:
+        pass
     except KeyboardInterrupt:
-        transaction.rollback()
         print("Update interrupted, changes rolled back")
+        sys.exit(1)
     except:
         import traceback
         traceback.print_exc()
-        transaction.rollback()
-    finally:
-        transaction.leave_transaction_management()
+        sys.exit(1)
 
     sys.exit(0)
 
