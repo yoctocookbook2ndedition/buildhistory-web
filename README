@@ -15,14 +15,14 @@ Setup
 
 In order to make use of this application you will need:
 
-* Django 1.8.x - tested with 1.8.12; newer versions may also work.
+* Django 1.8.x - tested with 1.8.13; newer versions may also work.
 * For production usage, a web server set up to host Django applications
   (not needed for local-only testing)
 * A database supported by Django (SQLite, MySQL, etc.). Django takes
   care of creating the database itself, you just need to ensure that the
   database server (if not using SQLite) is configured and running.
 * The following third-party Django modules (tested versions listed):
-  * django-registration (1.0)
+  * django-registration (2.1)
 * On the machine that will run the backend import script (which does not
   have to be the same machine as the web server - it could be the build
   machine; however it does still have to have Django installed, have the
@@ -30,7 +30,7 @@ In order to make use of this application you will need:
   database used by the web application):
   * Access to the buildhistory git repository produced by the build
     system, or a clone thereof
-  * Python 2.7.6 or newer (but not Python 3.x)
+  * Python 3.4 or later (or 2.7.6 or later if using krogoth or older)
   * A copy of BitBake and OE-Core (or Poky, which includes both) -
     the "dora" release or newer is required.
   * GitPython (python-git) version 0.3.1 or later
