@@ -12,6 +12,7 @@ import sys
 import os.path
 from datetime import datetime
 import argparse
+import django
 
 # Ensure PythonGit is installed (buildhistory_analysis needs it)
 try:
@@ -42,6 +43,8 @@ def main():
     newpath = os.path.abspath(os.path.dirname(os.path.abspath(sys.argv[0])) + '/..')
     sys.path.append(newpath)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+    django.setup()
+
 
     from django.db import transaction
     from warningmgr.models import WarningItem, Build
